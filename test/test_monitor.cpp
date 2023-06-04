@@ -5,28 +5,34 @@
 
 using namespace Monitoring;
 
+auto GenerateInterestingFloats()
+{
+  return GENERATE(std::numeric_limits<double>::lowest(),
+    -std::numeric_limits<double>::min(),
+    0.0,
+    std::numeric_limits<double>::min(),
+    std::numeric_limits<double>::max());
+}
+
+auto GenerateInterestingInts()
+{
+  return GENERATE(std::numeric_limits<int>::min(), -1, 0, 1, std::numeric_limits<int>::max());
+}
+
 TEST_CASE("Min", "[min]")
 {
   SECTION("Min returns true for integers")
   {
-    auto i = GENERATE(std::numeric_limits<int>::min(), -1, 0, 1, std::numeric_limits<int>::max());
-    auto j = GENERATE(std::numeric_limits<int>::min(), -1, 0, 1, std::numeric_limits<int>::max());
+    auto i = GenerateInterestingInts();
+    auto j = GenerateInterestingInts();
 
     REQUIRE(Min(i)(j) == i <= j);
   }
 
   SECTION("Min returns true for floats")
   {
-    auto i = GENERATE(std::numeric_limits<double>::lowest(),
-      -std::numeric_limits<double>::min(),
-      0.0,
-      std::numeric_limits<double>::min(),
-      std::numeric_limits<double>::max());
-    auto j = GENERATE(std::numeric_limits<double>::lowest(),
-      -std::numeric_limits<double>::min(),
-      0.0,
-      std::numeric_limits<double>::min(),
-      std::numeric_limits<double>::max());
+    auto i = GenerateInterestingFloats();
+    auto j = GenerateInterestingFloats();
 
     REQUIRE(Min(i)(j) == i <= j);
   }
@@ -36,8 +42,8 @@ TEST_CASE("Max", "[max]")
 {
   SECTION("Max returns true for integers")
   {
-    auto i = GENERATE(std::numeric_limits<int>::min(), -1, 0, 1, std::numeric_limits<int>::max());
-    auto j = GENERATE(std::numeric_limits<int>::min(), -1, 0, 1, std::numeric_limits<int>::max());
+    auto i = GenerateInterestingInts();
+    auto j = GenerateInterestingInts();
 
     CAPTURE(i, j);
     REQUIRE(Max(i)(j) == i >= j);
@@ -45,16 +51,8 @@ TEST_CASE("Max", "[max]")
 
   SECTION("Max returns true for floats")
   {
-    auto i = GENERATE(std::numeric_limits<double>::lowest(),
-      -std::numeric_limits<double>::min(),
-      0.0,
-      std::numeric_limits<double>::min(),
-      std::numeric_limits<double>::max());
-    auto j = GENERATE(std::numeric_limits<double>::lowest(),
-      -std::numeric_limits<double>::min(),
-      0.0,
-      std::numeric_limits<double>::min(),
-      std::numeric_limits<double>::max());
+    auto i = GenerateInterestingFloats();
+    auto j = GenerateInterestingFloats();
 
     CAPTURE(i, j);
     REQUIRE(Max(i)(j) == i >= j);
@@ -65,9 +63,9 @@ TEST_CASE("Between", "[between]")
 {
   SECTION("Between returns true for integers")
   {
-    auto i = GENERATE(std::numeric_limits<int>::min(), -1, 0, 1, std::numeric_limits<int>::max());
-    auto j = GENERATE(std::numeric_limits<int>::min(), -1, 0, 1, std::numeric_limits<int>::max());
-    auto k = GENERATE(std::numeric_limits<int>::min(), -1, 0, 1, std::numeric_limits<int>::max());
+    auto i = GenerateInterestingInts();
+    auto j = GenerateInterestingInts();
+    auto k = GenerateInterestingInts();
 
     CAPTURE(i, j, k);
     REQUIRE(Between(i, k)(j) == (i <= j && j <= k));
@@ -75,21 +73,9 @@ TEST_CASE("Between", "[between]")
 
   SECTION("Between returns true for floats")
   {
-    auto i = GENERATE(std::numeric_limits<double>::lowest(),
-      -std::numeric_limits<double>::min(),
-      0.0,
-      std::numeric_limits<double>::min(),
-      std::numeric_limits<double>::max());
-    auto j = GENERATE(std::numeric_limits<double>::lowest(),
-      -std::numeric_limits<double>::min(),
-      0.0,
-      std::numeric_limits<double>::min(),
-      std::numeric_limits<double>::max());
-    auto k = GENERATE(std::numeric_limits<double>::lowest(),
-      -std::numeric_limits<double>::min(),
-      0.0,
-      std::numeric_limits<double>::min(),
-      std::numeric_limits<double>::max());
+    auto i = GenerateInterestingFloats();
+    auto j = GenerateInterestingFloats();
+    auto k = GenerateInterestingFloats();
 
     CAPTURE(i, j, k);
     REQUIRE(Between(i, k)(j) == (i <= j && j <= k));
