@@ -1,8 +1,8 @@
 # Declarative Monitoring of variables with C++
 
-[![ci](https://github.com/nikolaj.fogh/monitoring/actions/workflows/ci.yml/badge.svg)](https://github.com/nikolaj.fogh/monitoring/actions/workflows/ci.yml)
-[![codecov](https://codecov.io/gh/nikolaj.fogh/monitoring/branch/main/graph/badge.svg)](https://codecov.io/gh/nikolaj.fogh/monitoring)
-[![CodeQL](https://github.com/nikolaj.fogh/monitoring/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/nikolaj.fogh/monitoring/actions/workflows/codeql-analysis.yml)
+[![ci](https://github.com/nfogh/monitoring/actions/workflows/ci.yml/badge.svg)](https://github.com/nfogh/monitoring/actions/workflows/ci.yml)
+[![codecov](https://app.codecov.io/gh/nfogh/monitoring/branch/main/graph/badge.svg)](https://app.codecov.io/gh/nfogh/monitoring/)
+[![CodeQL](https://github.com/nfogh/monitoring/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/nfogh/monitoring/actions/workflows/codeql-analysis.yml)
 
 ## About libmonitoring
 
