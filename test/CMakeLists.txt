@@ -24,7 +24,10 @@ include(${Catch2_SOURCE_DIR}/extras/Catch.cmake)
 # matches the version given to CMake. This will be important once you package
 # your program. Real world shows that this is the kind of simple mistake that is easy
 # to make, but also easy to test for.
-add_executable(tests test_monitor.cpp)
+add_executable(tests
+conditions/test_minmax.cpp
+conditions/test_between.cpp
+)
 target_link_libraries(
   tests
   PRIVATE monitoring::monitoring_warnings
