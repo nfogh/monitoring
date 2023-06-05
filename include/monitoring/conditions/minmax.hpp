@@ -1,9 +1,6 @@
 #pragma once
 
-#include <algorithm>
-#include <numeric>
-#include <tuple>
-#include <vector>
+#include <iostream>
 
 namespace Monitoring::Intern {
 template<typename T> auto Identity()
@@ -30,9 +27,13 @@ template<typename T> auto Min(T min) { return Min(std::move(min), Intern::Identi
 template<typename T, typename Getter> auto MinHyst(T min, T hyst, Getter getter)
 {
   return
-    [min = std::move(min), hyst = std::move(hyst), getter = std::move(getter), isSet = false](const T &val) mutable {
-      isSet = (getter(val) >= (isSet ? getter(min) + hyst : getter(min)));
-      return isSet;
+    [min = std::move(min), hyst = std::move(hyst), getter = std::move(getter), inHyst = false](const T &val) mutable {
+      if (inHyst) {
+        inHyst = getter(val) < getter(min) + getter(hyst);
+      } else {
+        inHyst = getter(val) < getter(min);
+      }
+      return !inHyst;
     };
 }
 
@@ -44,9 +45,13 @@ template<typename T> auto MinHyst(T min, T hyst)
 template<typename T, typename Getter> auto MaxHyst(T max, T hyst, Getter getter)
 {
   return
-    [max = std::move(max), hyst = std::move(hyst), getter = std::move(getter), isSet = false](const T &val) mutable {
-      isSet = (getter(val) <= (isSet ? getter(max) - hyst : getter(max)));
-      return isSet;
+    [max = std::move(max), hyst = std::move(hyst), getter = std::move(getter), inHyst = false](const T &val) mutable {
+      if (inHyst) {
+        inHyst = getter(val) > getter(max) - getter(hyst);
+      } else {
+        inHyst = getter(val) > getter(max);
+      }
+      return !inHyst;
     };
 }
 

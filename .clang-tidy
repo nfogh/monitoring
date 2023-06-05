@@ -17,7 +17,8 @@ Checks: "*,
         -readability-magic-numbers,
         -cppcoreguidelines-avoid-non-const-global-variables,
         -cppcoreguidelines-owning-memory,
-        -cert-err58-cpp
+        -cert-err58-cpp,
+        -readability-function-cognitive-complexity
 "
 WarningsAsErrors: ''
 HeaderFilterRegex: ''

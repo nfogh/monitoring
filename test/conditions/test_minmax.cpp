@@ -72,7 +72,6 @@ template<typename T> auto DataGetter()
 
 TEST_CASE("MaxGetter", "[max]")
 {
-
   SECTION("Max with a getter returns true for integers")
   {
     auto i = GENERATE(
@@ -97,5 +96,49 @@ TEST_CASE("MaxGetter", "[max]")
       Data(std::numeric_limits<double>::max()));
 
     REQUIRE(Max(i, DataGetter<double>())(j) == i.val >= j.val);
+  }
+}
+
+TEST_CASE("MaxHyst", "[min]")
+{
+  SECTION("Maxhyst")
+  {
+    //      4
+    //      3
+    // max  2 ----------
+    //      1
+    // hyst 0 ==========
+    //
+
+    auto maxHyst = MaxHyst(2, 2);
+    REQUIRE(maxHyst(0) == true);
+    REQUIRE(maxHyst(1) == true);
+    REQUIRE(maxHyst(3) == false);
+    REQUIRE(maxHyst(4) == false);
+    REQUIRE(maxHyst(1) == false);
+    REQUIRE(maxHyst(0) == true);
+    REQUIRE(maxHyst(1) == true);
+  }
+}
+
+TEST_CASE("MinHyst", "[min]")
+{
+  SECTION("Minhyst")
+  {
+    // hyst 4 ==========
+    //      3
+    // min  2 ----------
+    //      1
+    //      0
+    //
+
+    auto minHyst = MinHyst(2, 2);
+    REQUIRE(minHyst(3) == true);
+    REQUIRE(minHyst(2) == true);
+    REQUIRE(minHyst(1) == false);
+    REQUIRE(minHyst(2) == false);
+    REQUIRE(minHyst(3) == false);
+    REQUIRE(minHyst(4) == true);
+    REQUIRE(minHyst(3) == true);
   }
 }
