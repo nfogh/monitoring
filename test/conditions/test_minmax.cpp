@@ -1,8 +1,8 @@
 #include "utils.h"
-#include <monitoring/conditions/minmax.hpp>
 #include <catch2/catch_test_macros.hpp>
 #include <catch2/generators/catch_generators_adapters.hpp>
 #include <catch2/generators/catch_generators_random.hpp>
+#include <monitoring/conditions/minmax.hpp>
 
 using namespace Monitoring;
 
@@ -10,18 +10,18 @@ TEST_CASE("Min", "[min]")
 {
   SECTION("Min returns true for integers")
   {
-    auto i = GenerateInterestingInts();
-    auto j = GenerateInterestingInts();
+    auto lhs = GenerateInterestingInts();
+    auto rhs = GenerateInterestingInts();
 
-    REQUIRE(Min(i)(j) == (i <= j));
+    REQUIRE(Min(lhs)(rhs) == (lhs <= rhs));
   }
 
   SECTION("Min returns true for floats")
   {
-    auto i = GenerateInterestingFloats();
-    auto j = GenerateInterestingFloats();
+    auto lhs = GenerateInterestingFloats();
+    auto rhs = GenerateInterestingFloats();
 
-    REQUIRE(Min(i)(j) == (i <= j));
+    REQUIRE(Min(lhs)(rhs) == (lhs <= rhs));
   }
 }
 
@@ -29,20 +29,18 @@ TEST_CASE("Max", "[max]")
 {
   SECTION("Max returns true for integers")
   {
-    auto i = GenerateInterestingInts();
-    auto j = GenerateInterestingInts();
+    auto lhs = GenerateInterestingInts();
+    auto rhs = GenerateInterestingInts();
 
-    CAPTURE(i, j);
-    REQUIRE(Max(i)(j) == (i >= j));
+    REQUIRE(Max(lhs)(rhs) == (lhs >= rhs));
   }
 
   SECTION("Max returns true for floats")
   {
-    auto i = GenerateInterestingFloats();
-    auto j = GenerateInterestingFloats();
+    auto lhs = GenerateInterestingFloats();
+    auto rhs = GenerateInterestingFloats();
 
-    CAPTURE(i, j);
-    REQUIRE(Max(i)(j) == (i >= j));
+    REQUIRE(Max(lhs)(rhs) == (lhs >= rhs));
   }
 }
 
@@ -52,7 +50,7 @@ template<typename T> struct Data
   T val;
 };
 
-template<typename T> auto DataGetter()
+template<typename T> auto Val()
 {
   return [](const Data<T> &data) { return data.val; };
 }
@@ -61,28 +59,28 @@ TEST_CASE("MaxGetter", "[max]")
 {
   SECTION("Max with a getter returns true for integers")
   {
-    auto i = GENERATE(
+    auto lhs = GENERATE(
       Data(std::numeric_limits<int>::min()), Data(-1), Data(0), Data(1), Data(std::numeric_limits<int>::max()));
-    auto j = GENERATE(
+    auto rhs = GENERATE(
       Data(std::numeric_limits<int>::min()), Data(-1), Data(0), Data(1), Data(std::numeric_limits<int>::max()));
 
-    REQUIRE(Max(i, DataGetter<int>())(j) == (i.val >= j.val));
+    REQUIRE(Max(Val<int>(), lhs)(rhs) == (lhs.val >= rhs.val));
   }
 
   SECTION("Max returns true for floats")
   {
-    auto i = GENERATE(Data(std::numeric_limits<double>::lowest()),
+    auto lhs = GENERATE(Data(std::numeric_limits<double>::lowest()),
       Data(-std::numeric_limits<double>::min()),
       Data(0.0),
       Data(std::numeric_limits<double>::min()),
       Data(std::numeric_limits<double>::max()));
-    auto j = GENERATE(Data(std::numeric_limits<double>::lowest()),
+    auto rhs = GENERATE(Data(std::numeric_limits<double>::lowest()),
       Data(-std::numeric_limits<double>::min()),
       Data(0.0),
       Data(std::numeric_limits<double>::min()),
       Data(std::numeric_limits<double>::max()));
 
-    REQUIRE(Max(i, DataGetter<double>())(j) == (i.val >= j.val));
+    REQUIRE(Max(Val<double>(), lhs)(rhs) == (lhs.val >= rhs.val));
   }
 }
 
@@ -124,7 +122,8 @@ TEST_CASE("MaxHyst", "[min]")
     REQUIRE(maxHyst(1.0) == false);
     REQUIRE(maxHyst(0.0) == true);
     REQUIRE(maxHyst(1.0) == true);
-  }}
+  }
+}
 
 TEST_CASE("MinHyst", "[min]")
 {

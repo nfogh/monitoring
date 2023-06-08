@@ -8,15 +8,15 @@ namespace Monitoring {
 // TODO: static_assert if CallableT is not an actual callable
 template<typename CallableT> struct LogicCallable
 {
-  LogicCallable(CallableT callable) : callable(std::move(callable)) {}
+  LogicCallable(CallableT callable) : mCallable(std::move(callable)) {}
 
-  template<typename... Args> auto operator()(Args &&...args) const { return callable(std::forward<Args>(args)...); }
+  template<typename... Args> auto operator()(Args &&...args) const { return mCallable(std::forward<Args>(args)...); }
 
-  template<typename... Args> auto operator()(Args &&...args) { return callable(std::forward<Args>(args)...); }
+  template<typename... Args> auto operator()(Args &&...args) { return mCallable(std::forward<Args>(args)...); }
 
   template<typename OtherCallableT> auto operator||(OtherCallableT otherCallable)
   {
-    auto lamb = [thisCallable = this->callable, otherCallable = std::move(otherCallable)](auto &&...args) mutable {
+    auto lamb = [thisCallable = this->mCallable, otherCallable = std::move(otherCallable)](auto &&...args) mutable {
       const auto res1 = thisCallable(std::forward<decltype(args)>(args)...);
       const auto res2 = otherCallable(std::forward<decltype(args)>(args)...);
       return res1 || res2;
@@ -26,7 +26,7 @@ template<typename CallableT> struct LogicCallable
 
   template<typename OtherCallableT> auto operator&&(OtherCallableT otherCallable)
   {
-    auto lamb = [thisCallable = this->callable, otherCallable = std::move(otherCallable)](auto &&...args) mutable {
+    auto lamb = [thisCallable = this->mCallable, otherCallable = std::move(otherCallable)](auto &&...args) mutable {
       const auto res1 = thisCallable(std::forward<decltype(args)>(args)...);
       const auto res2 = otherCallable(std::forward<decltype(args)>(args)...);
       return res1 && res2;
@@ -36,12 +36,12 @@ template<typename CallableT> struct LogicCallable
 
   auto operator!()
   {
-    auto lamb = [callable = this->callable](
+    auto lamb = [callable = this->mCallable](
                   auto &&...args) mutable { return !callable(std::forward<decltype(args)>(args)...); };
     return LogicCallable<decltype(lamb)>(lamb);
   }
 
 private:
-  CallableT callable;
+  CallableT mCallable;
 };
 }// namespace Monitoring
