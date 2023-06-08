@@ -9,7 +9,7 @@ namespace Monitoring {
 template<typename T, typename GetterT, typename CompT> auto Comparison(GetterT getter, T otherVal, CompT comp)
 {
   auto lamb = [otherVal = std::move(otherVal), getter = std::move(getter), comp = std::move(comp)](
-                const T &val) { return comp(getter(val), getter(otherVal)); };
+                const T &val) { return comp(getter(otherVal), getter(val)); };
   return LogicCallable<decltype(lamb)>(std::move(lamb));
 }
 
@@ -32,9 +32,9 @@ template<typename T, typename Getter> auto MinHyst(Getter getter, T min, T hyst)
   return
     [min = std::move(min), hyst = std::move(hyst), getter = std::move(getter), inHyst = false](const T &val) mutable {
       if (inHyst) {
-        inHyst = getter(val) <= getter(min) + getter(hyst);
+        inHyst = getter(val) < getter(min) + getter(hyst);
       } else {
-        inHyst = getter(val) <= getter(min);
+        inHyst = getter(val) < getter(min);
       }
       return !inHyst;
     };
@@ -50,9 +50,9 @@ template<typename T, typename Getter> auto MaxHyst(Getter getter, T max, T hyst)
   return
     [max = std::move(max), hyst = std::move(hyst), getter = std::move(getter), inHyst = false](const T &val) mutable {
       if (inHyst) {
-        inHyst = getter(val) >= getter(max) - getter(hyst);
+        inHyst = getter(val) > getter(max) - getter(hyst);
       } else {
-        inHyst = getter(val) >= getter(max);
+        inHyst = getter(val) > getter(max);
       }
       return !inHyst;
     };
