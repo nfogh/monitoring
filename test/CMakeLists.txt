@@ -27,6 +27,7 @@ include(${Catch2_SOURCE_DIR}/extras/Catch.cmake)
 add_executable(tests
 conditions/test_minmax.cpp
 conditions/test_between.cpp
+conditions/test_equals.cpp
 )
 target_link_libraries(
   tests
@@ -34,6 +35,10 @@ target_link_libraries(
           monitoring::monitoring_options
           monitoring::monitoring
           Catch2::Catch2WithMain)
+
+if(CMAKE_CXX_COMPILER_ID MATCHES ".*Clang")
+  target_compile_options(tests PRIVATE "-ftime-trace")
+endif()
 
 if(WIN32 AND BUILD_SHARED_LIBS)
   add_custom_command(

@@ -1,13 +1,8 @@
 #pragma once
 
+#include "intern.hpp"
 #include <iostream>
 
-namespace Monitoring::Intern {
-template<typename T> auto Identity()
-{
-  return [](const T &val) { return val; };
-}
-}// namespace Monitoring::Intern
 
 namespace Monitoring {
 template<typename T, typename Getter> auto Max(T max, Getter getter)

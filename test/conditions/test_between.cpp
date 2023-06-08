@@ -1,23 +1,10 @@
+#include "utils.h"
+#include <monitoring/conditions/between.hpp>
 #include <catch2/catch_test_macros.hpp>
 #include <catch2/generators/catch_generators_adapters.hpp>
 #include <catch2/generators/catch_generators_random.hpp>
-#include <monitoring/conditions/between.hpp>
 
 using namespace Monitoring;
-
-static auto GenerateInterestingFloats()
-{
-  return GENERATE(std::numeric_limits<double>::lowest(),
-    -std::numeric_limits<double>::min(),
-    0.0,
-    std::numeric_limits<double>::min(),
-    std::numeric_limits<double>::max());
-}
-
-static auto GenerateInterestingInts()
-{
-  return GENERATE(std::numeric_limits<int>::min(), -1, 0, 1, std::numeric_limits<int>::max());
-}
 
 TEST_CASE("Between", "[between]")
 {
@@ -44,7 +31,7 @@ TEST_CASE("Between", "[between]")
 
 template<typename T> struct Data
 {
-  explicit Data(T val) : val(val) {}
+  explicit Data(T init) : val(init) {}
   T val;
 };
 

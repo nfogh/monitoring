@@ -1,5 +1,6 @@
 #pragma once
 
+#include "intern.hpp"
 #include "minmax.hpp"
 
 namespace Monitoring {
