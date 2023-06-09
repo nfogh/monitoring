@@ -15,8 +15,9 @@ public:
   template<typename... Ts> [[nodiscard]] auto operator()(Ts &&...ts)
   {
     static_assert(std::is_invocable_r_v<bool, decltype(mCondition), Ts...>,
-      "We cannot check for the conditions with these types. Please check if the conditions take the parameters you "
-      "have given. Also, conditions have to return a boolean value.");
+      "*** WE CANNOT CHECK FOR THE CONDITIONS WITH THESE TYPES. PLEASE CHECK IF "
+      "THE CONDITIONS TAKE THE PARAMES YOU HAVE GIVEN. ALSO, CONDITIONS HAVE TO"
+      " RETURN A BOOLEAN VALUE ***");
     bool allOk = mCondition(std::forward<Ts>(ts)...);
 
     if constexpr (sizeof...(HandlersT) != 0) {
