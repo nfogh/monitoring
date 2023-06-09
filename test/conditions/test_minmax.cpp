@@ -44,17 +44,6 @@ TEST_CASE("Max", "[max]")
   }
 }
 
-template<typename T> struct Data
-{
-  explicit Data(T init) : val(init) {}
-  T val;
-};
-
-template<typename T> auto Val()
-{
-  return [](const Data<T> &data) { return data.val; };
-}
-
 TEST_CASE("MaxGetter", "[max]")
 {
   SECTION("Max with a getter returns true for integers")

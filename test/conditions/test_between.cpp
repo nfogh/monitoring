@@ -27,19 +27,6 @@ TEST_CASE("Between", "[between]")
   }
 }
 
-namespace {
-template<typename T> struct Data
-{
-  explicit Data(T init) : val(init) {}
-  T val;
-};
-
-template<typename T> auto Val()
-{
-  return [](const Data<T> &data) { return data.val; };
-}
-}// namespace
-
 TEST_CASE("BetweenGetter", "[between]")
 {
 
