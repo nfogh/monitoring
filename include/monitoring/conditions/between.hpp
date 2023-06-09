@@ -1,19 +1,20 @@
 #pragma once
 
 #include "intern.hpp"
-#include "minmax.hpp"
+#include "logic_callable.hpp"
 
 namespace Monitoring {
 
-template<typename T, typename Getter> auto Between(T min, T max, Getter getter)
+template<typename Getter, typename T> auto Between(Getter getter, T min, T max)
 {
-  return [minCheck = Min(std::move(min), getter), maxCheck = Max(std::move(max), getter)](
-           const T &val) { return minCheck(val) && maxCheck(val); };
+  auto lamb = [getter = std::move(getter), min = std::move(min), max = std::move(max)](
+                const T &val) { return getter(min) <= getter(val) && getter(val) <= getter(max); };
+  return LogicCallable<decltype(lamb)>(std::move(lamb));
 }
 
 template<typename T> auto Between(T min, T max)
 {
-  return Between(std::move(min), std::move(max), Intern::Identity<T>());
+  return Between(Intern::Identity<T>(), std::move(min), std::move(max));
 }
 
 }// namespace Monitoring

@@ -1,8 +1,8 @@
 #include "utils.h"
-#include <monitoring/conditions/between.hpp>
 #include <catch2/catch_test_macros.hpp>
 #include <catch2/generators/catch_generators_adapters.hpp>
 #include <catch2/generators/catch_generators_random.hpp>
+#include <monitoring/conditions/between.hpp>
 
 using namespace Monitoring;
 
@@ -10,69 +10,69 @@ TEST_CASE("Between", "[between]")
 {
   SECTION("Between returns true for integers")
   {
-    auto i = GenerateInterestingInts();
-    auto j = GenerateInterestingInts();
-    auto k = GenerateInterestingInts();
+    auto lhs = GenerateInterestingInts();
+    auto rhs = GenerateInterestingInts();
+    auto mid = GenerateInterestingInts();
 
-    CAPTURE(i, j, k);
-    REQUIRE(Between(i, k)(j) == (i <= j && j <= k));
+    REQUIRE(Between(lhs, rhs)(mid) == (lhs <= mid && mid <= rhs));
   }
 
   SECTION("Between returns true for floats")
   {
-    auto i = GenerateInterestingFloats();
-    auto j = GenerateInterestingFloats();
-    auto k = GenerateInterestingFloats();
+    auto lhs = GenerateInterestingFloats();
+    auto rhs = GenerateInterestingFloats();
+    auto mid = GenerateInterestingFloats();
 
-    CAPTURE(i, j, k);
-    REQUIRE(Between(i, k)(j) == (i <= j && j <= k));
+    REQUIRE(Between(lhs, rhs)(mid) == (lhs <= mid && mid <= rhs));
   }
 }
 
+namespace {
 template<typename T> struct Data
 {
   explicit Data(T init) : val(init) {}
   T val;
 };
 
-template<typename T> auto DataGetter()
+template<typename T> auto Val()
 {
   return [](const Data<T> &data) { return data.val; };
 }
+}// namespace
 
 TEST_CASE("BetweenGetter", "[between]")
 {
 
   SECTION("Between with a getter returns true for integers")
   {
-    auto i = GENERATE(
+    auto lhs = GENERATE(
       Data(std::numeric_limits<int>::min()), Data(-1), Data(0), Data(1), Data(std::numeric_limits<int>::max()));
-    auto j = GENERATE(
+    auto rhs = GENERATE(
       Data(std::numeric_limits<int>::min()), Data(-1), Data(0), Data(1), Data(std::numeric_limits<int>::max()));
-    auto k = GENERATE(
+    auto middle = GENERATE(
       Data(std::numeric_limits<int>::min()), Data(-1), Data(0), Data(1), Data(std::numeric_limits<int>::max()));
 
-    REQUIRE(Between(i, k, DataGetter<int>())(j) == (i.val <= j.val && j.val <= k.val));
+    REQUIRE(Between(Val<int>(), lhs, rhs)(middle) == (lhs.val <= middle.val && middle.val <= rhs.val));
   }
 
-  SECTION("Max returns true for floats")
+  SECTION("Between returns true for floats")
   {
-    auto i = GENERATE(Data(std::numeric_limits<double>::lowest()),
+    auto lhs = GENERATE(Data(std::numeric_limits<double>::lowest()),
       Data(-std::numeric_limits<double>::min()),
       Data(0.0),
       Data(std::numeric_limits<double>::min()),
       Data(std::numeric_limits<double>::max()));
-    auto j = GENERATE(Data(std::numeric_limits<double>::lowest()),
+    auto rhs = GENERATE(Data(std::numeric_limits<double>::lowest()),
       Data(-std::numeric_limits<double>::min()),
       Data(0.0),
       Data(std::numeric_limits<double>::min()),
       Data(std::numeric_limits<double>::max()));
-    auto k = GENERATE(Data(std::numeric_limits<double>::lowest()),
+    auto middle = GENERATE(Data(std::numeric_limits<double>::lowest()),
       Data(-std::numeric_limits<double>::min()),
       Data(0.0),
       Data(std::numeric_limits<double>::min()),
       Data(std::numeric_limits<double>::max()));
 
-    REQUIRE(Between(i, k, DataGetter<double>())(j) == (i.val <= j.val && j.val <= k.val));
+    REQUIRE(Between(Val<double>(), lhs, rhs)(middle) == (lhs.val <= middle.val && middle.val <= rhs.val));
   }
 }

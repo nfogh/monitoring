@@ -1,17 +1,26 @@
 #include "utils.h"
-#include <monitoring/conditions/equals.hpp>
 #include <catch2/catch_test_macros.hpp>
 #include <catch2/generators/catch_generators_adapters.hpp>
 #include <catch2/generators/catch_generators_random.hpp>
+#include <monitoring/conditions/equals.hpp>
 
 using namespace Monitoring;
 
 TEST_CASE("Equals", "[equals]")
 {
-  SECTION("Equals")
+  SECTION("scalar")
   {
-    auto someInt = GenerateInterestingInts();
-    auto someOtherInt = GenerateInterestingInts();
-    REQUIRE(Equals(someInt)(someOtherInt) == (someInt == someOtherInt));
+    auto lhs = GenerateInterestingInts();
+    auto rhs = GenerateInterestingInts();
+
+    REQUIRE(Equals(lhs)(rhs) == (lhs == rhs));
   }
+
+  /*SECTION("array")
+  {
+    auto match1 = GenerateInterestingInts();
+    auto match2 = GenerateInterestingInts();
+    auto val = GenerateInterestingInts();
+    REQUIRE(Equals({ match1, match2 })(val) == (match1 == val || match2 == val));
+  }*/
 }
