@@ -4,8 +4,8 @@ namespace Monitoring {
 // Wrapping your callables in this class makes it possible to do logical operations on them.
 // The callables must return a bool and take the same parameters.
 // In fact, only the first callable needs to be wrapped in this class, the others can be normal callables.
-// TODO: Make operator||, && and ! work without having it to be mutable
-// TODO: static_assert if CallableT is not an actual callable
+// TODO: Make operator||, && and ! only give a mutable lambda if needed.
+// TODO: static_assert if CallableT is not an actual callable.
 template<typename CallableT> struct LogicCallable
 {
   LogicCallable(CallableT callable) : mCallable(std::move(callable)) {}
