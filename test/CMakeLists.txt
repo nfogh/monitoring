@@ -29,6 +29,7 @@ conditions/test_minmax.cpp
 conditions/test_between.cpp
 conditions/test_logic_callable.cpp
 conditions/test_equals.cpp
+conditions/test_difference.cpp
 )
 target_link_libraries(
   tests
