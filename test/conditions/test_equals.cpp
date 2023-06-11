@@ -16,11 +16,11 @@ TEST_CASE("Equals", "[equals]")
     REQUIRE(Equals(lhs)(rhs) == (lhs == rhs));
   }
 
-  /*SECTION("array")
+  SECTION("array")
   {
     auto match1 = GenerateInterestingInts();
     auto match2 = GenerateInterestingInts();
     auto val = GenerateInterestingInts();
     REQUIRE(Equals({ match1, match2 })(val) == (match1 == val || match2 == val));
-  }*/
+  }
 }
