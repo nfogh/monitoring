@@ -4,6 +4,7 @@
 #include "logic_callable.hpp"
 #include <algorithm>
 #include <utility>
+#include <vector>
 
 namespace Monitoring {
 

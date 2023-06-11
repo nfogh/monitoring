@@ -1,5 +1,7 @@
 #pragma once
 
+#include <utility>
+
 namespace Monitoring {
 // Wrapping your callables in this class makes it possible to do logical operations on them.
 // The callables must return a bool and take the same parameters.
