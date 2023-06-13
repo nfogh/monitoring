@@ -3,7 +3,7 @@
 #include <catch2/generators/catch_generators_random.hpp>
 #include <monitoring/monitor.hpp>
 #include <monitoring/conditions/equals.hpp>
-#include <monitoring/conditions/paramindex.hpp>
+#include <monitoring/conditions/argindex.hpp>
 
 using namespace Monitoring;
 
@@ -13,6 +13,6 @@ TEST_CASE("Monitor", "[monitor]")
   {
     Monitor(Equals(1), [](const bool success){ REQUIRE(success); })(1);
     Monitor(Equals(1.0), [](const bool success){ REQUIRE(success); })(1.0);
-    Monitor(FirstParam(Equals(1.0)), [](const bool success){ REQUIRE(success); })(1.0, 2.0);
+    Monitor(FirstArg(Equals(1.0)), [](const bool success){ REQUIRE(success); })(1.0, 2.0);
   }
 }

@@ -12,7 +12,7 @@ template<typename GetterT, typename ValueT, typename ComparerT> auto Difference(
 {
   auto lamb = [comp = std::move(comp), getter = std::move(getter), comparer = std::move(comparer)](
                 const ValueT &val1, const ValueT& val2) { return comparer(std::abs(getter(val1) - getter(val2)), getter(comp)); };
-  return LogicCallable<decltype(lamb)>(std::move(lamb));
+  return LogicCallable(std::move(lamb));
 }
 
 template<typename ValueT, typename GetterT> auto MaxDifference(GetterT getter, ValueT max)

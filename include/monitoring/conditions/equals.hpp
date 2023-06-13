@@ -15,7 +15,7 @@ template<typename Getter, typename T> auto Equals(Getter getter, std::initialize
       return getter(val) == getter(otherVal);
     });
   };
-  return LogicCallable<decltype(lamb)>(std::move(lamb));
+  return LogicCallable(std::move(lamb));
 }
 
 template<typename T> inline auto Equals(std::initializer_list<T> vals) { return Equals(Intern::Identity<T>(), vals); }

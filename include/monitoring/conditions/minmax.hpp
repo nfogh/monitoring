@@ -10,7 +10,7 @@ template<typename T, typename GetterT, typename CompT> auto Comparison(GetterT g
 {
   auto lamb = [otherVal = std::move(otherVal), getter = std::move(getter), comp = std::move(comp)](
                 const T &val) { return comp(getter(otherVal), getter(val)); };
-  return LogicCallable<decltype(lamb)>(std::move(lamb));
+  return LogicCallable(std::move(lamb));
 }
 
 template<typename T, typename Getter> auto Max(Getter getter, T max)

@@ -9,7 +9,7 @@ template<typename Getter, typename T> auto Between(Getter getter, T min, T max)
 {
   auto lamb = [getter = std::move(getter), min = std::move(min), max = std::move(max)](
                 const T &val) { return getter(min) <= getter(val) && getter(val) <= getter(max); };
-  return LogicCallable<decltype(lamb)>(std::move(lamb));
+  return LogicCallable(std::move(lamb));
 }
 
 template<typename T> auto Between(T min, T max)
