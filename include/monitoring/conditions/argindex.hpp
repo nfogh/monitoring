@@ -2,6 +2,9 @@
 
 #include "logic_callable.hpp"
 #include <tuple>
+#include <cstddef>
+
+// TODO: Remove mutable from the Args lambda when Logic_callable has fixed its constness and mutability
 
 namespace Monitoring
 {
@@ -9,7 +12,7 @@ namespace Monitoring
     template<size_t... ArgIndices, typename InnerConditionT>
     auto Args(InnerConditionT innerCondition)
     {
-        auto lamb = [innerCondition = std::move(innerCondition)](auto&&... args)
+        auto lamb = [innerCondition = std::move(innerCondition)](auto&&... args) mutable // Get rid of "mutable" when Logic_callable has fixed its constness and mutability
         {
             const auto argsTuple = std::forward_as_tuple(args...);
             return std::apply(innerCondition, std::forward_as_tuple(std::get<ArgIndices>(std::move(argsTuple))...));

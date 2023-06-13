@@ -1,6 +1,7 @@
 #pragma once
 
 #include <utility>
+#include <type_traits>
 
 namespace Monitoring {
 // Wrapping your callables in this class makes it possible to do logical operations on them.
@@ -8,13 +9,16 @@ namespace Monitoring {
 // In fact, only the first callable needs to be wrapped in this class, the others can be normal callables.
 // TODO: Make operator||, && and ! only give a mutable lambda if needed.
 // TODO: static_assert if CallableT is not an actual callable.
+// TODO: Make operator() const if CallableT is const.
 template<typename CallableT> struct LogicCallable
 {
   LogicCallable(CallableT callable) : mCallable(std::move(callable)) {}
 
-  template<typename... Args> auto operator()(Args &&...args) const { return mCallable(std::forward<Args>(args)...); }
+  template<typename... Args>
+  auto operator()(Args &&...args) const { return mCallable(std::forward<Args>(args)...); }
 
-  template<typename... Args> auto operator()(Args &&...args) { return mCallable(std::forward<Args>(args)...); }
+  template<typename... Args>
+  auto operator()(Args &&...args) { return mCallable(std::forward<Args>(args)...); }
 
   template<typename OtherCallableT> auto operator||(OtherCallableT otherCallable)
   {

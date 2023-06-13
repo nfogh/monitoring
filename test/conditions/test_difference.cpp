@@ -1,9 +1,9 @@
 #include "utils.h"
 #include <monitoring/conditions/difference.hpp>
 #include <catch2/catch_test_macros.hpp>
-#include <catch2/generators/catch_generators_adapters.hpp>
-#include <catch2/generators/catch_generators_random.hpp>
-#include <iostream>
+#include <catch2/generators/catch_generators.hpp>
+#include <limits>
+#include <stdlib.h>
 using namespace Monitoring;
 
 TEST_CASE("MaxDifference", "[maxdifference]")
