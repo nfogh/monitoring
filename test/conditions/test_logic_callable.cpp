@@ -23,17 +23,28 @@ TEST_CASE("logic_callable", "[logic_callable]")
 
   SECTION("ConstCorrectness")
   {
-    auto logicCallable1 = LogicCallable([](auto &&.../*args*/) { return true; });
-    auto logicCallable2 = LogicCallable([](auto &&.../*args*/) { return false; });
-    auto logicCallableAnd = logicCallable1 && logicCallable2;
-    auto logicCallableOr = logicCallable1 || logicCallable2;
-    auto logicCallableNot = !logicCallable1;
+    [[maybe_unused]] auto constLogicCallable1 = LogicCallable([](auto &&.../*args*/) { return true; });
+    [[maybe_unused]] auto constLogicCallable2 = LogicCallable([](auto &&.../*args*/) { return false; });
+    [[maybe_unused]] auto nonConstLogicCallable1 = LogicCallable([](auto &&.../*args*/) mutable { return true; });
+    [[maybe_unused]] auto nonConstLogicCallable2 = LogicCallable([](auto &&.../*args*/) mutable { return false; });
 
-    static_assert(is_const_invocable_v<decltype(logicCallable1), int>, "logicCallable should be const invocable");
-    static_assert(is_const_invocable_v<decltype(logicCallable2), int>, "logicCallable should be const invocable");
+    static_assert(is_const_invocable_v<decltype(constLogicCallable1), int>,
+      "A LogicCallable-wrapped callable which is const invocable should also be const invocable");
+    static_assert(!is_const_invocable_v<decltype(nonConstLogicCallable1), int>,
+      "A LogicCallable-wrapped callable which is not const invocable should also not be const invocable");
 
-    static_assert(is_const_invocable_v<decltype(logicCallableAnd), int>, "logicCallable should be const invocable");
-    static_assert(is_const_invocable_v<decltype(logicCallableOr), int>, "logicCallable should be const invocable");
-    static_assert(is_const_invocable_v<decltype(logicCallableNot), int>, "logicCallable should be const invocable");
+    static_assert(is_const_invocable_v<decltype(constLogicCallable1 && constLogicCallable2), int>,
+      "AND of const invocable LogicCallables should be const invocable");
+    static_assert(is_const_invocable_v<decltype(constLogicCallable1 || constLogicCallable2), int>,
+      "OR of const invocable LogicCallables should be const invocable");
+    static_assert(is_const_invocable_v<decltype(!constLogicCallable1), int>,
+      "NOT of a const invocable LogicCallable should be const invocable");
+
+    static_assert(!is_const_invocable_v<decltype(constLogicCallable1 && nonConstLogicCallable2), int>,
+      "AND of const invocable and non const-invocable LogicCallables should not be const invocable");
+    static_assert(!is_const_invocable_v<decltype(constLogicCallable1 || nonConstLogicCallable2), int>,
+      "OR of const invocable and non const-invocable LogicCallables should not be const invocable");
+    static_assert(!is_const_invocable_v<decltype(!nonConstLogicCallable1), int>,
+      "NOT of a non const-invocable LogicCallable should also be non const-invocable");
   }
 }
