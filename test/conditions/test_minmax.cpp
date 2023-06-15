@@ -53,7 +53,7 @@ TEST_CASE("MaxGetter", "[max]")
     auto rhs = GENERATE(
       Data(std::numeric_limits<int>::min()), Data(-1), Data(0), Data(1), Data(std::numeric_limits<int>::max()));
 
-    REQUIRE(Max(Val<int>(), lhs)(rhs) == (lhs.val >= rhs.val));
+    REQUIRE(Max(Val<int>(), lhs.val)(rhs) == (lhs.val >= rhs.val));
   }
 
   SECTION("Max returns true for floats")
@@ -69,7 +69,7 @@ TEST_CASE("MaxGetter", "[max]")
       Data(std::numeric_limits<double>::min()),
       Data(std::numeric_limits<double>::max()));
 
-    REQUIRE(Max(Val<double>(), lhs)(rhs) == (lhs.val >= rhs.val));
+    REQUIRE(Max(Val<double>(), lhs.val)(rhs) == (lhs.val >= rhs.val));
   }
 }
 

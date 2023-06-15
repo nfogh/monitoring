@@ -83,7 +83,7 @@ if(monitoring_BUILD_FUZZ_TESTS)
 endif()
 
 if(PROJECT_IS_TOP_LEVEL)
-  #add_subdirectory(examples)
+  add_subdirectory(examples)
 endif()
 
 # If MSVC is being used, and ASAN is enabled, we need to set the debugger environment

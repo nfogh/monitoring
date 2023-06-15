@@ -9,20 +9,20 @@ namespace Monitoring {
 template<typename T, typename GetterT, typename CompT> auto Comparison(GetterT getter, T otherVal, CompT comp)
 {
   auto lamb = [otherVal = std::move(otherVal), getter = std::move(getter), comp = std::move(comp)](
-                const T &val) { return comp(getter(otherVal), getter(val)); };
+                const auto &val) { return comp(otherVal, getter(val)); };
   return LogicCallable(std::move(lamb));
 }
 
 template<typename T, typename Getter> auto Max(Getter getter, T max)
 {
-  return Comparison(std::move(getter), std::move(max), std::greater_equal<std::invoke_result_t<Getter, T>>());
+  return Comparison(std::move(getter), std::move(max), std::greater_equal<T>());
 }
 
 template<typename T> auto Max(T max) { return Max(Intern::Identity<T>(), std::move(max)); }
 
 template<typename T, typename Getter> auto Min(Getter getter, T min)
 {
-  return Comparison(std::move(getter), std::move(min), std::less_equal<std::invoke_result_t<Getter, T>>());
+  return Comparison(std::move(getter), std::move(min), std::less_equal<T>());
 }
 
 template<typename T> auto Min(T min) { return Min(Intern::Identity<T>(), std::move(min)); }
@@ -30,11 +30,11 @@ template<typename T> auto Min(T min) { return Min(Intern::Identity<T>(), std::mo
 template<typename T, typename Getter> auto MinHyst(Getter getter, T min, T hyst)
 {
   return
-    [min = std::move(min), hyst = std::move(hyst), getter = std::move(getter), inHyst = false](const T &val) mutable {
+    [min = std::move(min), hyst = std::move(hyst), getter = std::move(getter), inHyst = false](const auto &val) mutable {
       if (inHyst) {
-        inHyst = getter(val) < getter(min) + getter(hyst);
+        inHyst = getter(val) < min + hyst;
       } else {
-        inHyst = getter(val) < getter(min);
+        inHyst = getter(val) < min;
       }
       return !inHyst;
     };
@@ -48,11 +48,11 @@ template<typename T> auto MinHyst(T min, T hyst)
 template<typename T, typename Getter> auto MaxHyst(Getter getter, T max, T hyst)
 {
   return
-    [max = std::move(max), hyst = std::move(hyst), getter = std::move(getter), inHyst = false](const T &val) mutable {
+    [max = std::move(max), hyst = std::move(hyst), getter = std::move(getter), inHyst = false](const auto& val) mutable {
       if (inHyst) {
-        inHyst = getter(val) > getter(max) - getter(hyst);
+        inHyst = getter(val) > max - hyst;
       } else {
-        inHyst = getter(val) > getter(max);
+        inHyst = getter(val) > max;
       }
       return !inHyst;
     };

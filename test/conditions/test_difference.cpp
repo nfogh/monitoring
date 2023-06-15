@@ -39,7 +39,7 @@ TEST_CASE("MaxDifference", "[maxdifference]")
     auto diff = GENERATE(
       Data(std::numeric_limits<int>::min() / 2), Data(-1), Data(0), Data(1), Data(std::numeric_limits<int>::max() / 2));
 
-    REQUIRE(MaxDifference(Val<int>(), diff)(val1, val2) == (std::abs(val1.val - val2.val) <= diff.val));
+    REQUIRE(MaxDifference(Val<int>(), diff.val)(val1, val2) == (std::abs(val1.val - val2.val) <= diff.val));
   }
 
   SECTION("floatgetter")
@@ -60,7 +60,7 @@ TEST_CASE("MaxDifference", "[maxdifference]")
       Data(1.0),
       Data(std::numeric_limits<double>::max()));
 
-    REQUIRE(MaxDifference(Val<double>(), diff)(val1, val2) == (std::abs(val1.val - val2.val) <= diff.val));
+    REQUIRE(MaxDifference(Val<double>(), diff.val)(val1, val2) == (std::abs(val1.val - val2.val) <= diff.val));
   }
 }
 
@@ -97,7 +97,7 @@ TEST_CASE("MinDifference", "[mindifference]")
     auto diff = GENERATE(
       Data(std::numeric_limits<int>::min() / 2), Data(-1), Data(0), Data(1), Data(std::numeric_limits<int>::max() / 2));
 
-    REQUIRE(MinDifference(Val<int>(), diff)(val1, val2) == (std::abs(val1.val - val2.val) >= diff.val));
+    REQUIRE(MinDifference(Val<int>(), diff.val)(val1, val2) == (std::abs(val1.val - val2.val) >= diff.val));
   }
 
   SECTION("floatgetter")
@@ -118,6 +118,6 @@ TEST_CASE("MinDifference", "[mindifference]")
       Data(1.0),
       Data(std::numeric_limits<double>::max()));
 
-    REQUIRE(MinDifference(Val<double>(), diff)(val1, val2) == (std::abs(val1.val - val2.val) >= diff.val));
+    REQUIRE(MinDifference(Val<double>(), diff.val)(val1, val2) == (std::abs(val1.val - val2.val) >= diff.val));
   }
 }

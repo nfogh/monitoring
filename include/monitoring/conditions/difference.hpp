@@ -11,17 +11,17 @@ namespace Monitoring {
 template<typename GetterT, typename ValueT, typename ComparerT> auto Difference(GetterT getter, ValueT comp, ComparerT comparer)
 {
   auto lamb = [comp = std::move(comp), getter = std::move(getter), comparer = std::move(comparer)](
-                const ValueT &val1, const ValueT& val2) { return comparer(std::abs(getter(val1) - getter(val2)), getter(comp)); };
+                const auto &val1, const auto& val2) { return comparer(std::abs(getter(val1) - getter(val2)), comp); };
   return LogicCallable(std::move(lamb));
 }
 
 template<typename ValueT, typename GetterT> auto MaxDifference(GetterT getter, ValueT max)
 {
-  return Difference(std::move(getter), std::move(max), std::less_equal<std::invoke_result_t<GetterT, ValueT>>());
+  return Difference(std::move(getter), std::move(max), std::less_equal<ValueT>());
 }
 template<typename ValueT, typename GetterT> auto MinDifference(GetterT getter, ValueT min)
 {
-  return Difference(std::move(getter), std::move(min), std::greater_equal<std::invoke_result_t<GetterT, ValueT>>());
+  return Difference(std::move(getter), std::move(min), std::greater_equal<ValueT>());
 }
 
 template<typename ValueT> auto MaxDifference(ValueT max) { return MaxDifference(Intern::Identity<ValueT>(), std::move(max)); }
