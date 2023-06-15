@@ -6,21 +6,31 @@
 #include <tuple>
 
 namespace PubSubMonitoring {
+  namespace intern
+  {
+    template <typename TupleT, typename Fn>
+    void for_each_tuple(Fn&& fn, TupleT&& tp) {
+      std::apply
+      (
+          [&fn](auto&& ...args)
+          {
+              (fn(std::forward<decltype(args)>(args)), ...);
+          }, std::forward<TupleT>(tp)
+      );
+    }
+  }
 
   template<typename MessagesTpl, typename MonitorT>
   struct PubSubMonitor
   {
     PubSubMonitor(IPubSub &pubsub, MessagesTpl messages, MonitorT monitor) : mPubSub(pubsub), mMessages(std::move(messages)), mMonitor(std::move(monitor))
     {
-      std::apply([&](auto &arg)
-      {
-        mPubSub.Subscribe(arg, [&] { Check(); });
-      }, mMessages);
+      intern::for_each_tuple([&](auto &arg) { mPubSub.Subscribe(arg, [&] { Check(); }); }, mMessages);
     }
 
     ~PubSubMonitor()
     {
-      std::apply([&](auto& arg) { mPubSub.Unsubscribe(arg); }, mMessages);
+      intern::for_each_tuple([&](auto& arg) { mPubSub.Unsubscribe(arg); }, mMessages);
     }
 
   private:

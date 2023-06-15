@@ -19,10 +19,11 @@ int main()
 {
     using namespace Monitoring;
     using namespace PubSubMonitoring;
-    FloatMessage floatMessage1;
     PubSub ps;
 
-    auto monitor = PubSubMonitoring::Monitor(floatMessage1)
+    std::cout << "Test min/max: " << std::endl;
+
+    auto monitor = PubSubMonitoring::Monitor(FloatMessage(0.0f))
       .Require(Min(FloatField(), 1.0f) && Max(FloatField(), 10.0f))
       .Handler([](bool good){ std::cout << std::boolalpha << "Good? " << good << std::endl; }).With(ps);
 
@@ -32,16 +33,17 @@ int main()
         ps.Publish(FloatMessage(i));
     }
 
-    IntMessage intMessage1(0, "IntMessage1");
-    IntMessage intMessage2(0, "IntMessage2");
-    auto monitor2 = PubSubMonitoring::Monitor(intMessage1, intMessage2)
+    std::cout << std::endl << "Test diff: " << std::endl;
+    
+    auto monitor2 = PubSubMonitoring::Monitor(IntMessage(0, "IntMessage1"), IntMessage(0, "IntMessage2"))
       .Require(MaxDifference(IntField(), 10))
       .Handler([](bool good){ std::cout << std::boolalpha << "Good? " << good << std::endl; }).With(ps);
 
-    for (auto i = 0; i <= 15; ++i)
+    for (auto i = -10; i <= 10; ++i)
     {
-        std::cout << i << ": ";
+        std::cout << i << "," << -i << " = " << abs(2*i) << ": ";
         ps.Publish(IntMessage(i, "IntMessage1"));
-        ps.Publish(IntMessage(i, "IntMessage2"));
+        ps.Publish(IntMessage(-i, "IntMessage2"));
     }
+    
 }
