@@ -33,6 +33,7 @@ conditions/test_difference.cpp
 conditions/test_argindex.cpp
 conditions/test_property.cpp
 conditions/test_field.cpp
+conditions/test_oddeven.cpp
 test_monitor.cpp
 )
 target_link_libraries(

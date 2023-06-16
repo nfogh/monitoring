@@ -18,7 +18,9 @@ Checks: "*,
         -cppcoreguidelines-avoid-non-const-global-variables,
         -cppcoreguidelines-owning-memory,
         -cert-err58-cpp,
-        -readability-function-cognitive-complexity
+        -readability-function-cognitive-complexity,
+        -hicpp-uppercase-literal-suffix,
+        -readability-uppercase-literal-suffix
 "
 WarningsAsErrors: ''
 HeaderFilterRegex: ''

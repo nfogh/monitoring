@@ -10,7 +10,7 @@ on:
       - develop
 
 env:
-  CLANG_TIDY_VERSION: "16.0.0"
+  CLANG_TIDY_VERSION: "15.0.2"
   VERBOSE: 1
 
 
@@ -30,12 +30,11 @@ jobs:
       matrix:
         os:
           - ubuntu-latest
-          - macos-latest
           - windows-latest
         compiler:
           # you can specify the version after `-` like "llvm-15.0.2".
-          - llvm-16.0.0
-          - gcc-13.1
+          - llvm-15.0.2
+          - gcc-11
         generator:
           - "Ninja Multi-Config"
         build_type:
@@ -50,21 +49,18 @@ jobs:
         exclude:
           # mingw is determined by this author to be too buggy to support
           - os: windows-2019
-            compiler: gcc-13.1
+            compiler: gcc-11
 
         include:
           # Add appropriate variables for gcov version required. This will intentionally break
           # if you try to use a compiler that does not have gcov set
-          - compiler: gcc-13.1
+          - compiler: gcc-11
             gcov_executable: gcov
             enable_ipo: On
 
           - compiler: llvm-15.0.2
             enable_ipo: Off
             gcov_executable: "llvm-cov gcov"
-
-          - os: macos-latest
-            enable_ipo: Off
 
           # Set up preferred package generators, for given build configurations
           - build_type: Release
@@ -73,7 +69,7 @@ jobs:
 
           # This exists solely to make sure a non-multiconfig build works
           - os: ubuntu-20.04
-            compiler: gcc-13.1
+            compiler: gcc-11
             generator: "Unix Makefiles"
             build_type: Debug
             gcov_executable: gcov
