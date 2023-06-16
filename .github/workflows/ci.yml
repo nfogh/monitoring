@@ -48,7 +48,7 @@ jobs:
 
         exclude:
           # mingw is determined by this author to be too buggy to support
-          - os: windows-2019
+          - os: windows-latest
             compiler: gcc-11
 
         include:
