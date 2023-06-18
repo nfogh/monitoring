@@ -47,6 +47,8 @@ if(CMAKE_CXX_COMPILER_ID MATCHES ".*Clang")
   target_compile_options(tests PRIVATE "-ftime-trace")
 endif()
 
+target_link_libraries(tests INTERFACE monitoring_options monitoring_warnings)
+
 if(WIN32 AND BUILD_SHARED_LIBS)
   add_custom_command(
     TARGET tests
