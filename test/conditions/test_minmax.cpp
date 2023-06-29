@@ -8,12 +8,13 @@ using namespace Monitoring;
 
 TEST_CASE("Min", "[min]")
 {
+  auto checker = DefaultConditionChecker();
   SECTION("Min returns true for integers")
   {
     auto lhs = GenerateInterestingInts();
     auto rhs = GenerateInterestingInts();
 
-    REQUIRE(Min(lhs)(rhs) == (lhs <= rhs));
+    REQUIRE(checker(Min(lhs), rhs) == (lhs <= rhs));
   }
 
   SECTION("Min returns true for floats")
@@ -21,18 +22,19 @@ TEST_CASE("Min", "[min]")
     auto lhs = GenerateInterestingFloats();
     auto rhs = GenerateInterestingFloats();
 
-    REQUIRE(Min(lhs)(rhs) == (lhs <= rhs));
+    REQUIRE(checker(Min(lhs), rhs) == (lhs <= rhs));
   }
 }
 
 TEST_CASE("Max", "[max]")
 {
+  auto checker = DefaultConditionChecker();
   SECTION("Max returns true for integers")
   {
     auto lhs = GenerateInterestingInts();
     auto rhs = GenerateInterestingInts();
 
-    REQUIRE(Max(lhs)(rhs) == (lhs >= rhs));
+    REQUIRE(checker(Max(lhs), rhs) == (lhs >= rhs));
   }
 
   SECTION("Max returns true for floats")
@@ -40,12 +42,13 @@ TEST_CASE("Max", "[max]")
     auto lhs = GenerateInterestingFloats();
     auto rhs = GenerateInterestingFloats();
 
-    REQUIRE(Max(lhs)(rhs) == (lhs >= rhs));
+    REQUIRE(checker(Max(lhs), rhs) == (lhs >= rhs));
   }
 }
 
 TEST_CASE("MaxGetter", "[max]")
 {
+  auto checker = DefaultConditionChecker();
   SECTION("Max with a getter returns true for integers")
   {
     auto lhs = GENERATE(
@@ -53,7 +56,7 @@ TEST_CASE("MaxGetter", "[max]")
     auto rhs = GENERATE(
       Data(std::numeric_limits<int>::min()), Data(-1), Data(0), Data(1), Data(std::numeric_limits<int>::max()));
 
-    REQUIRE(Max(Val<int>(), lhs.val)(rhs) == (lhs.val >= rhs.val));
+    REQUIRE(checker(Max(Val<int>(), lhs.val), rhs) == (lhs.val >= rhs.val));
   }
 
   SECTION("Max returns true for floats")
@@ -69,12 +72,13 @@ TEST_CASE("MaxGetter", "[max]")
       Data(std::numeric_limits<double>::min()),
       Data(std::numeric_limits<double>::max()));
 
-    REQUIRE(Max(Val<double>(), lhs.val)(rhs) == (lhs.val >= rhs.val));
+    REQUIRE(checker(Max(Val<double>(), lhs.val), rhs) == (lhs.val >= rhs.val));
   }
 }
 
 TEST_CASE("MaxHyst", "[min]")
 {
+  auto checker = DefaultConditionChecker();
   SECTION("Maxhyst")
   {
     //      4
@@ -85,13 +89,13 @@ TEST_CASE("MaxHyst", "[min]")
     //
 
     auto maxHyst = MaxHyst(2, 2);
-    REQUIRE(maxHyst(0) == true);
-    REQUIRE(maxHyst(1) == true);
-    REQUIRE(maxHyst(3) == false);
-    REQUIRE(maxHyst(4) == false);
-    REQUIRE(maxHyst(1) == false);
-    REQUIRE(maxHyst(0) == true);
-    REQUIRE(maxHyst(1) == true);
+    REQUIRE(checker(maxHyst, 0) == true);
+    REQUIRE(checker(maxHyst, 1) == true);
+    REQUIRE(checker(maxHyst, 3) == false);
+    REQUIRE(checker(maxHyst, 4) == false);
+    REQUIRE(checker(maxHyst, 1) == false);
+    REQUIRE(checker(maxHyst, 0) == true);
+    REQUIRE(checker(maxHyst, 1) == true);
   }
 
   SECTION("MaxhystDouble")
@@ -104,18 +108,19 @@ TEST_CASE("MaxHyst", "[min]")
     //
 
     auto maxHyst = MaxHyst(2.0, 2.0);
-    REQUIRE(maxHyst(0.0) == true);
-    REQUIRE(maxHyst(1.0) == true);
-    REQUIRE(maxHyst(3.0) == false);
-    REQUIRE(maxHyst(4.0) == false);
-    REQUIRE(maxHyst(1.0) == false);
-    REQUIRE(maxHyst(0.0) == true);
-    REQUIRE(maxHyst(1.0) == true);
+    REQUIRE(checker(maxHyst, 0.0) == true);
+    REQUIRE(checker(maxHyst, 1.0) == true);
+    REQUIRE(checker(maxHyst, 3.0) == false);
+    REQUIRE(checker(maxHyst, 4.0) == false);
+    REQUIRE(checker(maxHyst, 1.0) == false);
+    REQUIRE(checker(maxHyst, 0.0) == true);
+    REQUIRE(checker(maxHyst, 1.0) == true);
   }
 }
 
 TEST_CASE("MinHyst", "[min]")
 {
+  auto checker = DefaultConditionChecker();
   SECTION("Minhyst")
   {
     // hyst 4 ==========
@@ -126,13 +131,13 @@ TEST_CASE("MinHyst", "[min]")
     //
 
     auto minHyst = MinHyst(2, 2);
-    REQUIRE(minHyst(3) == true);
-    REQUIRE(minHyst(2) == true);
-    REQUIRE(minHyst(1) == false);
-    REQUIRE(minHyst(2) == false);
-    REQUIRE(minHyst(3) == false);
-    REQUIRE(minHyst(4) == true);
-    REQUIRE(minHyst(3) == true);
+    REQUIRE(checker(minHyst, 3) == true);
+    REQUIRE(checker(minHyst, 2) == true);
+    REQUIRE(checker(minHyst, 1) == false);
+    REQUIRE(checker(minHyst, 2) == false);
+    REQUIRE(checker(minHyst, 3) == false);
+    REQUIRE(checker(minHyst, 4) == true);
+    REQUIRE(checker(minHyst, 3) == true);
   }
 
   SECTION("MinhystDouble")
@@ -145,12 +150,12 @@ TEST_CASE("MinHyst", "[min]")
     //
 
     auto minHyst = MinHyst(2.0, 2.0);
-    REQUIRE(minHyst(3.0) == true);
-    REQUIRE(minHyst(2.0) == true);
-    REQUIRE(minHyst(1.0) == false);
-    REQUIRE(minHyst(2.0) == false);
-    REQUIRE(minHyst(3.0) == false);
-    REQUIRE(minHyst(4.0) == true);
-    REQUIRE(minHyst(3.0) == true);
+    REQUIRE(checker(minHyst, 3.0) == true);
+    REQUIRE(checker(minHyst, 2.0) == true);
+    REQUIRE(checker(minHyst, 1.0) == false);
+    REQUIRE(checker(minHyst, 2.0) == false);
+    REQUIRE(checker(minHyst, 3.0) == false);
+    REQUIRE(checker(minHyst, 4.0) == true);
+    REQUIRE(checker(minHyst, 3.0) == true);
   }
 }

@@ -1,29 +1,57 @@
 #pragma once
 
-#include "logic_callable.hpp"
+#include "condition.hpp"
 #include <cstddef>
 #include <tuple>
 
 namespace Monitoring {
-//@brief Pick out a number of arguments from the supplied arguments
+namespace Intern {
+  template<typename InnerConditionT, size_t... ArgIndices> struct Args
+  {
+    Args(InnerConditionT innerCondition) : mInnerCondition(std::move(innerCondition)) {}
+
+    using needs_checker = void;
+
+    template<typename CheckerT, typename... ArgsT>
+    constexpr bool check(const CheckerT &checker, const ArgsT &...args) const
+    {
+      const auto argsTuple = std::forward_as_tuple(args...);
+      return checker(mInnerCondition, std::get<ArgIndices>(argsTuple)...);
+    }
+
+    LIBMONITORING_DEFINE_LOGIC_OPERATORS;
+
+  private:
+    InnerConditionT mInnerCondition;
+  };
+}// namespace Intern
+
 template<size_t... ArgIndices, typename InnerConditionT> auto Args(InnerConditionT innerCondition)
 {
-  auto lamb = [innerCondition = std::move(innerCondition)](auto &&...args) {
-    const auto argsTuple = std::forward_as_tuple(args...);
-    return std::apply(innerCondition, std::forward_as_tuple(std::get<ArgIndices>(std::move(argsTuple))...));
-  };
-  return LogicCallable<decltype(lamb)>(std::move(lamb));
+  return Intern::Args<InnerConditionT, ArgIndices...>(std::move(innerCondition));
 }
 
 //@brief Picks out the first argument
-template<typename Func> auto FirstArg(Func func) { return Args<0>(std::move(func)); };
+template<typename InnerConditionT> auto FirstArg(InnerConditionT innerCondition)
+{
+  return Args<0>(std::move(innerCondition));
+};
 
 //@brief Picks out the second argument
-template<typename Func> auto SecondArg(Func func) { return Args<1>(std::move(func)); };
+template<typename InnerConditionT> auto SecondArg(InnerConditionT innerCondition)
+{
+  return Args<1>(std::move(innerCondition));
+};
 
 //@brief Picks out the third argument
-template<typename Func> auto ThirdArg(Func func) { return Args<2>(std::move(func)); };
+template<typename InnerConditionT> auto ThirdArg(InnerConditionT innerCondition)
+{
+  return Args<2>(std::move(innerCondition));
+};
 
 //@brief Picks out the fourth argument
-template<typename Func> auto FourthArg(Func func) { return Args<3>(std::move(func)); };
+template<typename InnerConditionT> auto FourthArg(InnerConditionT innerCondition)
+{
+  return Args<3>(std::move(innerCondition));
+};
 }// namespace Monitoring

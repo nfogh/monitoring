@@ -1,8 +1,2 @@
-
-add_executable(PubSubMonitorExample
-  PubSubMonitorExample.cpp)
-
-target_link_libraries(
-  PubSubMonitorExample
-  PRIVATE
-    monitoring::monitoring)
+add_subdirectory(Simple)
+add_subdirectory(SubscribingConditions)

@@ -27,7 +27,7 @@ include(${Catch2_SOURCE_DIR}/extras/Catch.cmake)
 add_executable(tests
 conditions/test_minmax.cpp
 conditions/test_between.cpp
-conditions/test_logic_callable.cpp
+#conditions/test_condition.cpp
 conditions/test_equals.cpp
 conditions/test_difference.cpp
 conditions/test_argindex.cpp

@@ -1,13 +1,25 @@
 #pragma once
 
-#include "logic_callable.hpp"
+#include "condition.hpp"
 #include <utility>
-namespace Monitoring
+namespace Monitoring {
+template<typename PropertyT, typename InnerConditionT> struct Property
 {
-    template<typename PropertyT, typename InnerConditionT>
-    auto Property(PropertyT property, InnerConditionT innerCond)
-    {
-        auto lamb = [property, innerCond = std::move(innerCond)](const auto& arg){ return innerCond((arg.*property)()); };
-        return LogicCallable(std::move(lamb));
-    };
-}
+  Property(PropertyT property, InnerConditionT innerCond)
+    : mProperty(std::move(property)), mInnerCond(std::move(innerCond))
+  {}
+
+  using needs_checker = void;
+
+  template<typename CheckerT, typename ValT> bool check(const CheckerT &checker, const ValT &val) const
+  {
+    return checker(mInnerCond, (val.*mProperty)());
+  }
+
+  LIBMONITORING_DEFINE_LOGIC_OPERATORS;
+
+private:
+  PropertyT mProperty;
+  InnerConditionT mInnerCond;
+};
+}// namespace Monitoring

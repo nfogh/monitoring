@@ -1,8 +1,8 @@
 #pragma once
 
 namespace Monitoring::Intern {
-template<typename T> auto Identity()
+struct Identity
 {
-  return [](const T &val) { return val; };
-}
+  template<typename T> constexpr auto operator()(T &&val) const noexcept { return std::forward<T>(val); }
+};
 }// namespace Monitoring::Intern
