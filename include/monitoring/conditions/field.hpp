@@ -1,23 +1,13 @@
 #pragma once
 
-#include "condition.hpp"
+#include "logic_callable.hpp"
 
-namespace Monitoring {
-template<typename ClassT, typename FieldT, typename InnerConditionT> struct Field
+namespace Monitoring
 {
-  Field(FieldT ClassT::*field, InnerConditionT innerCond) : mField(field), mInnerCond(std::move(innerCond)) {}
-
-  using needs_checker = void;
-
-  template<typename CheckerT, typename ValT> constexpr bool check(const CheckerT &checker, const ValT &val) const
-  {
-    return checker(mInnerCond, val.*mField);
-  }
-
-  LIBMONITORING_DEFINE_LOGIC_OPERATORS;
-
-  FieldT ClassT::*mField;
-  InnerConditionT mInnerCond;
-};
-
-}// namespace Monitoring
+    template<typename ClassT, typename FieldT, typename InnerConditionT>
+    auto Field(FieldT ClassT::*field, InnerConditionT innerCond)
+    {
+        auto lamb = [field, innerCond = std::move(innerCond)](const auto& arg){ return innerCond(arg.*field); };
+        return LogicCallable(lamb);
+    };
+}

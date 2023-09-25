@@ -9,8 +9,6 @@ using namespace Monitoring;
 
 TEST_CASE("Property", "[property]")
 {
-  auto checker = DefaultConditionChecker();
-
   SECTION("Test that we can extract properties from structs")
   {
     struct Data
@@ -23,13 +21,13 @@ TEST_CASE("Property", "[property]")
       int c = 2;
     } data;
 
-    REQUIRE(checker(Property(&Data::GetA, Equals(0)), data));
-    REQUIRE(checker(!Property(&Data::GetA, Equals(1)), data));
+    REQUIRE(Property(&Data::GetA, Equals(0))(data));
+    REQUIRE(!Property(&Data::GetA, Equals(1))(data));
 
-    REQUIRE(checker(Property(&Data::GetB, Equals(1)), data));
-    REQUIRE(checker(!Property(&Data::GetB, Equals(0)), data));
+    REQUIRE(Property(&Data::GetB, Equals(1))(data));
+    REQUIRE(!Property(&Data::GetB, Equals(0))(data));
 
-    REQUIRE(checker(Property(&Data::GetC, Equals(2)), data));
-    REQUIRE(checker(!Property(&Data::GetC, Equals(0)), data));
+    REQUIRE(Property(&Data::GetC, Equals(2))(data));
+    REQUIRE(!Property(&Data::GetC, Equals(0))(data));
   }
 }

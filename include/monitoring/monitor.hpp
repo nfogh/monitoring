@@ -1,56 +1,36 @@
 #pragma once
 #include <memory>
-#include <tuple>
 #include <utility>
 
 namespace Monitoring {
-namespace Intern {
-  template<typename ConditionT, typename HandlersT, typename CheckerT> class Monitor
+template<typename ConditionT, typename... HandlersT> class Monitor
+{
+public:
+  Monitor(ConditionT condition, HandlersT... handlers)
+    : mCondition(std::move(condition)), mHandlers(std::move(handlers)...)
+  {}
+
+  // Check the given types for the conditions, and call the
+  // handlers with the
+  template<typename... Ts> [[nodiscard]] auto operator()(Ts &&...ts)
   {
-  public:
-    Monitor(ConditionT condition, HandlersT handlers, CheckerT checker)
-      : mCondition(std::move(condition)), mChecker(std::move(checker)), mHandlers(std::move(handlers))
-    {}
+    static_assert(std::is_invocable_r_v<bool, decltype(mCondition), Ts...>,
+      "*** WE CANNOT CHECK FOR THE CONDITIONS WITH THESE TYPES. PLEASE CHECK IF "
+      "THE CONDITIONS TAKE THE PARAMES YOU HAVE GIVEN. ALSO, CONDITIONS HAVE TO"
+      " RETURN A BOOLEAN VALUE ***");
+    bool allOk = mCondition(std::forward<Ts>(ts)...);
 
-    // Check the given types for the conditions, and call the
-    // handlers with the
-    template<typename... Args> [[nodiscard]] auto operator()(const Args &...args)
-    {
-      const bool allOk = mChecker(mCondition, args...);
-
-      if constexpr (std::tuple_size_v<HandlersT> != 0) {
-        std::apply(
-          [allOk](auto &&...args) { (..., args(allOk)); }, mHandlers);// Call all handlers with allOk as a parameter
-      } else {
-        return allOk;
-      }
+    if constexpr (sizeof...(HandlersT) != 0) {
+      std::apply(
+        [allOk](auto &&...args) { (..., args(allOk)); }, mHandlers);// Call all handlers with allOk as a parameter
+    } else {
+      return allOk;
     }
+  }
 
-  private:
-    ConditionT mCondition;
-    CheckerT mChecker;
-    HandlersT mHandlers;
-  };
-}// namespace Intern
-
-template<typename ConditionT,
-  typename CheckerT,
-  typename... HandlersT,
-  typename std::enable_if_t<is_condition_checker_v<CheckerT>, int> = 0>
-[[nodiscard]] auto Monitor(ConditionT condition, CheckerT checker, HandlersT... handlers)
-{
-  return Intern::Monitor(std::move(condition), std::make_tuple(std::move(handlers)...), std::move(checker));
-}
-
-template<typename ConditionT,
-  typename FirstHandlerT,
-  typename... OtherHandlersT,
-  typename std::enable_if_t<!is_condition_checker_v<FirstHandlerT>, int> = 0>
-[[nodiscard]] auto Monitor(ConditionT condition, FirstHandlerT handler, OtherHandlersT... otherHandlers)
-{
-  return Intern::Monitor(std::move(condition),
-    std::tuple_cat(std::tuple(std::move(handler)), std::make_tuple(std::move(otherHandlers)...)),
-    DefaultConditionChecker());
-}
+private:
+  ConditionT mCondition;
+  std::tuple<HandlersT...> mHandlers;
+};
 
 }// namespace Monitoring

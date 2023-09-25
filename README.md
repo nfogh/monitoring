@@ -3,7 +3,6 @@
 [![ci](https://github.com/nfogh/monitoring/actions/workflows/ci.yml/badge.svg)](https://github.com/nfogh/monitoring/actions/workflows/ci.yml)
 [![codecov](https://codecov.io/gh/nfogh/monitoring/branch/main/graph/badge.svg)](https://app.codecov.io/gh/nfogh/monitoring/)
 [![CodeQL](https://github.com/nfogh/monitoring/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/nfogh/monitoring/actions/workflows/codeql-analysis.yml)
-[![sonar](https://sonarcloud.io/api/project_badges/measure?project=nfogh_monitoring&metric=alert_status)](https://sonarcloud.io/dashboard?id=nfogh_monitoring)
 
 ## About libmonitoring
 

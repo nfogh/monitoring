@@ -8,7 +8,6 @@ using namespace Monitoring;
 
 TEST_CASE("MaxDifference", "[maxdifference]")
 {
-  auto checker = DefaultConditionChecker();
   SECTION("integers")
   {
     // /2 to avoid integer overflow
@@ -17,7 +16,7 @@ TEST_CASE("MaxDifference", "[maxdifference]")
     auto diff = GenerateInterestingInts(std::numeric_limits<int>::min() / 2, std::numeric_limits<int>::max() / 2);
 
     CAPTURE(val1, val2, diff);
-    REQUIRE(checker(MaxDifference(diff), val1, val2) == (std::abs(val1 - val2) <= diff));
+    REQUIRE(MaxDifference(diff)(val1, val2) == (std::abs(val1 - val2) <= diff));
   }
 
   SECTION("floats")
@@ -27,7 +26,7 @@ TEST_CASE("MaxDifference", "[maxdifference]")
     auto diff = GenerateInterestingFloats();
 
     CAPTURE(val1, val2, diff);
-    REQUIRE(checker(MaxDifference(diff), val1, val2) == (std::abs(val1 - val2) <= diff));
+    REQUIRE(MaxDifference(diff)(val1, val2) == (std::abs(val1 - val2) <= diff));
   }
 
   SECTION("integergetter")
@@ -40,7 +39,7 @@ TEST_CASE("MaxDifference", "[maxdifference]")
     auto diff = GENERATE(
       Data(std::numeric_limits<int>::min() / 2), Data(-1), Data(0), Data(1), Data(std::numeric_limits<int>::max() / 2));
 
-    REQUIRE(checker(MaxDifference(Val<int>(), diff.val), val1, val2) == (std::abs(val1.val - val2.val) <= diff.val));
+    REQUIRE(MaxDifference(Val<int>(), diff.val)(val1, val2) == (std::abs(val1.val - val2.val) <= diff.val));
   }
 
   SECTION("floatgetter")
@@ -61,13 +60,12 @@ TEST_CASE("MaxDifference", "[maxdifference]")
       Data(1.0),
       Data(std::numeric_limits<double>::max()));
 
-    REQUIRE(checker(MaxDifference(Val<double>(), diff.val), val1, val2) == (std::abs(val1.val - val2.val) <= diff.val));
+    REQUIRE(MaxDifference(Val<double>(), diff.val)(val1, val2) == (std::abs(val1.val - val2.val) <= diff.val));
   }
 }
 
 TEST_CASE("MinDifference", "[mindifference]")
 {
-  auto checker = DefaultConditionChecker();
   SECTION("integers")
   {
     // /2 to avoid integer overflow
@@ -76,7 +74,7 @@ TEST_CASE("MinDifference", "[mindifference]")
     auto diff = GenerateInterestingInts(std::numeric_limits<int>::min() / 2, std::numeric_limits<int>::max() / 2);
 
     CAPTURE(val1, val2, diff);
-    REQUIRE(checker(MinDifference(diff), val1, val2) == (std::abs(val1 - val2) >= diff));
+    REQUIRE(MinDifference(diff)(val1, val2) == (std::abs(val1 - val2) >= diff));
   }
 
   SECTION("floats")
@@ -86,7 +84,7 @@ TEST_CASE("MinDifference", "[mindifference]")
     auto diff = GenerateInterestingFloats();
 
     CAPTURE(val1, val2, diff);
-    REQUIRE(checker(MinDifference(diff), val1, val2) == (std::abs(val1 - val2) >= diff));
+    REQUIRE(MinDifference(diff)(val1, val2) == (std::abs(val1 - val2) >= diff));
   }
 
   SECTION("integergetter")
@@ -99,7 +97,7 @@ TEST_CASE("MinDifference", "[mindifference]")
     auto diff = GENERATE(
       Data(std::numeric_limits<int>::min() / 2), Data(-1), Data(0), Data(1), Data(std::numeric_limits<int>::max() / 2));
 
-    REQUIRE(checker(MinDifference(Val<int>(), diff.val), val1, val2) == (std::abs(val1.val - val2.val) >= diff.val));
+    REQUIRE(MinDifference(Val<int>(), diff.val)(val1, val2) == (std::abs(val1.val - val2.val) >= diff.val));
   }
 
   SECTION("floatgetter")
@@ -120,6 +118,6 @@ TEST_CASE("MinDifference", "[mindifference]")
       Data(1.0),
       Data(std::numeric_limits<double>::max()));
 
-    REQUIRE(checker(MinDifference(Val<double>(), diff.val), val1, val2) == (std::abs(val1.val - val2.val) >= diff.val));
+    REQUIRE(MinDifference(Val<double>(), diff.val)(val1, val2) == (std::abs(val1.val - val2.val) >= diff.val));
   }
 }

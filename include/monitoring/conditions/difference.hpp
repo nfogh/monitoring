@@ -1,31 +1,19 @@
 #pragma once
 
-#include "condition.hpp"
 #include "intern.hpp"
+#include "logic_callable.hpp"
 #include <algorithm>
-#include <functional>
 #include <utility>
+#include <functional>
 
 namespace Monitoring {
 
-template<typename GetterT, typename ValueT, typename ComparerT> struct Difference
+template<typename GetterT, typename ValueT, typename ComparerT> auto Difference(GetterT getter, ValueT comp, ComparerT comparer)
 {
-  Difference(GetterT getter, ValueT comp, ComparerT comparer)
-    : mGetter(std::move(getter)), mComp(std::move(comp)), mComparer(std::move(comparer))
-  {}
-
-  template<typename ValT> constexpr bool check(const ValT &val1, const ValT &val2) const
-  {
-    return mComparer(std::abs(mGetter(val1) - mGetter(val2)), mComp);
-  }
-
-  LIBMONITORING_DEFINE_LOGIC_OPERATORS;
-
-private:
-  GetterT mGetter;
-  ValueT mComp;
-  ComparerT mComparer;
-};
+  auto lamb = [comp = std::move(comp), getter = std::move(getter), comparer = std::move(comparer)](
+                const auto &val1, const auto& val2) { return comparer(std::abs(getter(val1) - getter(val2)), comp); };
+  return LogicCallable(std::move(lamb));
+}
 
 template<typename ValueT, typename GetterT> auto MaxDifference(GetterT getter, ValueT max)
 {
@@ -36,7 +24,7 @@ template<typename ValueT, typename GetterT> auto MinDifference(GetterT getter, V
   return Difference(std::move(getter), std::move(min), std::greater_equal<ValueT>());
 }
 
-template<typename ValueT> auto MaxDifference(ValueT max) { return MaxDifference(Intern::Identity(), std::move(max)); }
-template<typename ValueT> auto MinDifference(ValueT min) { return MinDifference(Intern::Identity(), std::move(min)); }
+template<typename ValueT> auto MaxDifference(ValueT max) { return MaxDifference(Intern::Identity<ValueT>(), std::move(max)); }
+template<typename ValueT> auto MinDifference(ValueT min) { return MinDifference(Intern::Identity<ValueT>(), std::move(min)); }
 
 }// namespace Monitoring
