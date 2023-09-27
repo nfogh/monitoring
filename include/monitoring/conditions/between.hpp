@@ -8,7 +8,7 @@ namespace Monitoring {
 template<typename Getter, typename T> auto Between(Getter getter, T min, T max)
 {
   auto lamb = [getter = std::move(getter), min = std::move(min), max = std::move(max)](
-                const T &val) { return getter(min) <= getter(val) && getter(val) <= getter(max); };
+                const auto &, const T &val) { return getter(min) <= getter(val) && getter(val) <= getter(max); };
   return LogicCallable(std::move(lamb));
 }
 

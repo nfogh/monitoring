@@ -10,7 +10,7 @@ namespace Monitoring {
 
 template<typename Getter, typename T> auto Equals(Getter getter, std::initializer_list<T> otherVals)
 {
-  auto lamb = [otherVals = std::vector(otherVals), getter = std::move(getter)](const T &val) {
+  auto lamb = [otherVals = std::vector(otherVals), getter = std::move(getter)](const auto &, const T &val) {
     return std::any_of(otherVals.cbegin(), otherVals.cend(), [&val, getter = std::move(getter)](const auto &otherVal) {
       return getter(val) == getter(otherVal);
     });
@@ -19,6 +19,6 @@ template<typename Getter, typename T> auto Equals(Getter getter, std::initialize
 }
 
 template<typename T> inline auto Equals(std::initializer_list<T> vals) { return Equals(Intern::Identity<T>(), vals); }
-template<typename T> inline auto Equals(T val) { return Equals(Intern::Identity<T>(), {std::move(val)}); }
+template<typename T> inline auto Equals(T val) { return Equals(Intern::Identity<T>(), { std::move(val) }); }
 
 }// namespace Monitoring

@@ -1,10 +1,14 @@
 #include "utils.h"
 #include <catch2/catch_test_macros.hpp>
 #include <catch2/generators/catch_generators.hpp>
-#include <monitoring/conditions/between.hpp>
 #include <limits>
+#include <monitoring/conditions/between.hpp>
 
 using namespace Monitoring;
+
+namespace {
+constexpr int _ = 0;
+}
 
 TEST_CASE("Between", "[between]")
 {
@@ -14,7 +18,7 @@ TEST_CASE("Between", "[between]")
     auto rhs = GenerateInterestingInts();
     auto mid = GenerateInterestingInts();
 
-    REQUIRE(Between(lhs, rhs)(mid) == (lhs <= mid && mid <= rhs));
+    REQUIRE(Between(lhs, rhs)(_, mid) == (lhs <= mid && mid <= rhs));
   }
 
   SECTION("Between returns true for floats")
@@ -23,7 +27,7 @@ TEST_CASE("Between", "[between]")
     auto rhs = GenerateInterestingFloats();
     auto mid = GenerateInterestingFloats();
 
-    REQUIRE(Between(lhs, rhs)(mid) == (lhs <= mid && mid <= rhs));
+    REQUIRE(Between(lhs, rhs)(_, mid) == (lhs <= mid && mid <= rhs));
   }
 }
 
@@ -39,7 +43,7 @@ TEST_CASE("BetweenGetter", "[between]")
     auto middle = GENERATE(
       Data(std::numeric_limits<int>::min()), Data(-1), Data(0), Data(1), Data(std::numeric_limits<int>::max()));
 
-    REQUIRE(Between(Val<int>(), lhs, rhs)(middle) == (lhs.val <= middle.val && middle.val <= rhs.val));
+    REQUIRE(Between(Val<int>(), lhs, rhs)(_, middle) == (lhs.val <= middle.val && middle.val <= rhs.val));
   }
 
   SECTION("Between returns true for floats")
@@ -60,6 +64,6 @@ TEST_CASE("BetweenGetter", "[between]")
       Data(std::numeric_limits<double>::min()),
       Data(std::numeric_limits<double>::max()));
 
-    REQUIRE(Between(Val<double>(), lhs, rhs)(middle) == (lhs.val <= middle.val && middle.val <= rhs.val));
+    REQUIRE(Between(Val<double>(), lhs, rhs)(_, middle) == (lhs.val <= middle.val && middle.val <= rhs.val));
   }
 }

@@ -4,12 +4,11 @@
 #include "logic_callable.hpp"
 #include <iostream>
 
-
 namespace Monitoring {
 template<typename T, typename GetterT, typename CompT> auto Comparison(GetterT getter, T otherVal, CompT comp)
 {
   auto lamb = [otherVal = std::move(otherVal), getter = std::move(getter), comp = std::move(comp)](
-                const auto &val) { return comp(otherVal, getter(val)); };
+                const auto &, const auto &val) { return comp(otherVal, getter(val)); };
   return LogicCallable(std::move(lamb));
 }
 
@@ -29,15 +28,15 @@ template<typename T> auto Min(T min) { return Min(Intern::Identity<T>(), std::mo
 
 template<typename T, typename Getter> auto MinHyst(Getter getter, T min, T hyst)
 {
-  return
-    [min = std::move(min), hyst = std::move(hyst), getter = std::move(getter), inHyst = false](const auto &val) mutable {
-      if (inHyst) {
-        inHyst = getter(val) < min + hyst;
-      } else {
-        inHyst = getter(val) < min;
-      }
-      return !inHyst;
-    };
+  return [min = std::move(min), hyst = std::move(hyst), getter = std::move(getter), inHyst = false](
+           const auto &val) mutable {
+    if (inHyst) {
+      inHyst = getter(val) < min + hyst;
+    } else {
+      inHyst = getter(val) < min;
+    }
+    return !inHyst;
+  };
 }
 
 template<typename T> auto MinHyst(T min, T hyst)
@@ -47,15 +46,15 @@ template<typename T> auto MinHyst(T min, T hyst)
 
 template<typename T, typename Getter> auto MaxHyst(Getter getter, T max, T hyst)
 {
-  return
-    [max = std::move(max), hyst = std::move(hyst), getter = std::move(getter), inHyst = false](const auto& val) mutable {
-      if (inHyst) {
-        inHyst = getter(val) > max - hyst;
-      } else {
-        inHyst = getter(val) > max;
-      }
-      return !inHyst;
-    };
+  return [max = std::move(max), hyst = std::move(hyst), getter = std::move(getter), inHyst = false](
+           const auto &val) mutable {
+    if (inHyst) {
+      inHyst = getter(val) > max - hyst;
+    } else {
+      inHyst = getter(val) > max;
+    }
+    return !inHyst;
+  };
 }
 
 template<typename T> auto MaxHyst(T max, T hyst)

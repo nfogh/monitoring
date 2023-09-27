@@ -8,9 +8,10 @@ namespace Monitoring {
 //@brief Pick out a number of arguments from the supplied arguments
 template<size_t... ArgIndices, typename InnerConditionT> auto Args(InnerConditionT innerCondition)
 {
-  auto lamb = [innerCondition = std::move(innerCondition)](auto &&...args) {
+  auto lamb = [innerCondition = std::move(innerCondition)](auto &&opt, auto &&...args) {
     const auto argsTuple = std::forward_as_tuple(args...);
-    return std::apply(innerCondition, std::forward_as_tuple(std::get<ArgIndices>(std::move(argsTuple))...));
+    return std::apply(innerCondition,
+      std::tuple_cat(std::make_tuple(opt), std::forward_as_tuple(std::get<ArgIndices>(std::move(argsTuple))...)));
   };
   return LogicCallable<decltype(lamb)>(std::move(lamb));
 }

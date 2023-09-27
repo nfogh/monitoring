@@ -6,6 +6,10 @@
 
 using namespace Monitoring;
 
+namespace {
+constexpr int _ = 0;
+}
+
 TEST_CASE("Min", "[min]")
 {
   SECTION("Min returns true for integers")
@@ -13,7 +17,7 @@ TEST_CASE("Min", "[min]")
     auto lhs = GenerateInterestingInts();
     auto rhs = GenerateInterestingInts();
 
-    REQUIRE(Min(lhs)(rhs) == (lhs <= rhs));
+    REQUIRE(Min(lhs)(_, rhs) == (lhs <= rhs));
   }
 
   SECTION("Min returns true for floats")
@@ -21,7 +25,7 @@ TEST_CASE("Min", "[min]")
     auto lhs = GenerateInterestingFloats();
     auto rhs = GenerateInterestingFloats();
 
-    REQUIRE(Min(lhs)(rhs) == (lhs <= rhs));
+    REQUIRE(Min(lhs)(_, rhs) == (lhs <= rhs));
   }
 }
 
@@ -32,7 +36,7 @@ TEST_CASE("Max", "[max]")
     auto lhs = GenerateInterestingInts();
     auto rhs = GenerateInterestingInts();
 
-    REQUIRE(Max(lhs)(rhs) == (lhs >= rhs));
+    REQUIRE(Max(lhs)(_, rhs) == (lhs >= rhs));
   }
 
   SECTION("Max returns true for floats")
@@ -40,7 +44,7 @@ TEST_CASE("Max", "[max]")
     auto lhs = GenerateInterestingFloats();
     auto rhs = GenerateInterestingFloats();
 
-    REQUIRE(Max(lhs)(rhs) == (lhs >= rhs));
+    REQUIRE(Max(lhs)(_, rhs) == (lhs >= rhs));
   }
 }
 
@@ -53,7 +57,7 @@ TEST_CASE("MaxGetter", "[max]")
     auto rhs = GENERATE(
       Data(std::numeric_limits<int>::min()), Data(-1), Data(0), Data(1), Data(std::numeric_limits<int>::max()));
 
-    REQUIRE(Max(Val<int>(), lhs.val)(rhs) == (lhs.val >= rhs.val));
+    REQUIRE(Max(Val<int>(), lhs.val)(_, rhs) == (lhs.val >= rhs.val));
   }
 
   SECTION("Max returns true for floats")
@@ -69,7 +73,7 @@ TEST_CASE("MaxGetter", "[max]")
       Data(std::numeric_limits<double>::min()),
       Data(std::numeric_limits<double>::max()));
 
-    REQUIRE(Max(Val<double>(), lhs.val)(rhs) == (lhs.val >= rhs.val));
+    REQUIRE(Max(Val<double>(), lhs.val)(_, rhs) == (lhs.val >= rhs.val));
   }
 }
 
