@@ -21,7 +21,10 @@ auto PrintResult()
   return [](bool good) { std::cout << std::boolalpha << "Good? " << good << std::endl; };
 }
 
-constexpr auto Print = [](bool good) { std::cout << std::boolalpha << "Good? " << good << std::endl; };
+auto Print()
+{
+  return [](bool good) { std::cout << std::boolalpha << "Good? " << good << std::endl; };
+}
 
 int main()
 {
@@ -31,7 +34,7 @@ int main()
 
   std::cout << "Test min/max: " << std::endl;
   auto monitor =
-    PubSubMonitoring::Monitor(FloatMessage("MySignal")).With(ps).Require(Min(FloatMessage("MyLimit"))).Handler(Print);
+    PubSubMonitoring::Monitor(FloatMessage("MySignal")).With(ps).Require(Min(FloatMessage("MyLimit"))).Handler(Print());
 
   std::cout << "Setting new limit to 5.0\n";
   ps.Publish(FloatMessage(5.0f, "MyLimit"));

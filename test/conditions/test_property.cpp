@@ -17,9 +17,9 @@ TEST_CASE("Property", "[property]")
   {
     struct Data
     {
-      [[nodiscard]] int GetA() const { return a; }
-      [[nodiscard]] int GetB() const { return b; }
-      [[nodiscard]] int GetC() const { return c; }
+      /* [[nodiscard]]*/ int GetA() const { return a; }
+      /* [[nodiscard]]*/ int GetB() const { return b; }
+      /* [[nodiscard]]*/ int GetC() const { return c; }
       int a = 0;
       int b = 1;
       int c = 2;

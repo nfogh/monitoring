@@ -37,11 +37,11 @@ TEST_CASE("BetweenGetter", "[between]")
   SECTION("Between with a getter returns true for integers")
   {
     auto lhs = GENERATE(
-      Data(std::numeric_limits<int>::min()), Data(-1), Data(0), Data(1), Data(std::numeric_limits<int>::max()));
+      Data<int>(std::numeric_limits<int>::min()), Data(-1), Data(0), Data(1), Data(std::numeric_limits<int>::max()));
     auto rhs = GENERATE(
-      Data(std::numeric_limits<int>::min()), Data(-1), Data(0), Data(1), Data(std::numeric_limits<int>::max()));
+      Data<int>(std::numeric_limits<int>::min()), Data(-1), Data(0), Data(1), Data(std::numeric_limits<int>::max()));
     auto middle = GENERATE(
-      Data(std::numeric_limits<int>::min()), Data(-1), Data(0), Data(1), Data(std::numeric_limits<int>::max()));
+      Data<int>(std::numeric_limits<int>::min()), Data(-1), Data(0), Data(1), Data(std::numeric_limits<int>::max()));
 
     REQUIRE(Between(Val<int>(), lhs, rhs)(_, middle) == (lhs.val <= middle.val && middle.val <= rhs.val));
   }

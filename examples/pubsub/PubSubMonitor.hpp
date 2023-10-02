@@ -7,12 +7,23 @@
 #include <tuple>
 
 namespace PubSubMonitoring {
-namespace intern {
-  template<typename TupleT, typename Fn> void for_each_tuple(Fn &&fn, TupleT &&tp)
+namespace Intern {
+  template<typename T, typename FuncT, int... Is> void for_each(FuncT func, T &&arg, std::integer_sequence<int, Is...>)
   {
-    std::apply([&fn](auto &&...args) { (fn(std::forward<decltype(args)>(args)), ...); }, std::forward<TupleT>(tp));
+    auto unused{ (func(std::get<Is>(arg)), 0)... };
+    (void)unused;
   }
-}// namespace intern
+
+  template<typename FuncT, typename... Ts> void for_each_in_tuple(FuncT func, std::tuple<Ts...> &args)
+  {
+    for_each(func, args, std::make_integer_sequence<int, sizeof...(Ts)>());
+  }
+
+  template<typename FuncT, typename... Ts> void for_each_in_tuple(FuncT func, const std::tuple<Ts...> &args)
+  {
+    for_each(func, args, std::make_integer_sequence<int, sizeof...(Ts)>());
+  }
+}// namespace Intern
 
 struct SubscribeAndCheckFunc
 {
@@ -30,25 +41,25 @@ private:
   std::function<void(void)> mCheckFunc;
 };
 
-template<typename MessagesT, typename MonitorT> struct PubSubMonitor
+template<typename MessagesT, typename MonitorT> struct PubSubMonitorT
 {
-  PubSubMonitor(IPubSub &pubsub, MessagesT messages, MonitorT monitor)
+  PubSubMonitorT(IPubSub &pubsub, MessagesT messages, MonitorT monitor)
     : mPubSub(pubsub), mMessages(std::move(messages)), mMonitor(std::move(monitor))
   {
     mMonitor.GetOpt().SetCheckFunc([&] { Check(); });
-    intern::for_each_tuple([&](auto &arg) { mPubSub.Subscribe(arg, [&] { Check(); }); }, mMessages);
+    Intern::for_each_in_tuple([&](auto &arg) { mPubSub.Subscribe(arg, [&] { Check(); }); }, mMessages);
     Check();
   }
 
-  ~PubSubMonitor()
+  ~PubSubMonitorT()
   {
-    intern::for_each_tuple([&](auto &arg) { mPubSub.Unsubscribe(arg); }, mMessages);
+    Intern::for_each_in_tuple([&](auto &arg) { mPubSub.Unsubscribe(arg); }, mMessages);
   }
 
 private:
   void Check()
   {
-    std::apply([&](auto &&...args) { mMonitor(std::forward<decltype(args)>(args)...); }, mMessages);
+    Monitoring::Intern::apply([&](auto &&...args) { mMonitor(std::forward<decltype(args)>(args)...); }, mMessages);
   }
 
   IPubSub &mPubSub;
@@ -56,16 +67,22 @@ private:
   MonitorT mMonitor;
 };
 
-template<typename MessagesT, typename RequirementsT> struct MonitorWithRequirements
+template<typename MessagesT, typename MonitorT>
+auto PubSubMonitor(IPubSub &pubsub, MessagesT messages, MonitorT monitor)
 {
-  MonitorWithRequirements(MessagesT messages, IPubSub &pubsub, RequirementsT requirements)
+  return PubSubMonitorT<MessagesT, MonitorT>(pubsub, std::move(messages), std::move(monitor));
+}
+
+template<typename MessagesT, typename RequirementsT> struct MonitorWithRequirementsT
+{
+  MonitorWithRequirementsT(MessagesT messages, IPubSub &pubsub, RequirementsT requirements)
     : mMessages(std::move(messages)), mPubSub(pubsub), mRequirements(std::move(requirements))
   {}
 
-  template<typename... HandlersT> [[nodiscard]] auto Handler(HandlersT &&...handlers)
+  template<typename... HandlersT> /*[[nodiscard]]*/ auto Handler(HandlersT &&...handlers)
   {
     auto mergedHandlers = [handlers = std::forward_as_tuple(handlers...)](bool result) {
-      std::apply([result](auto &&...handlers) { (..., handlers(result)); }, handlers);
+      Intern::for_each_in_tuple([&](auto &handler) { handler(result); }, handlers);
     };
     auto subscribeAndCheckFunc = SubscribeAndCheckFunc(mPubSub);
     return PubSubMonitor(mPubSub, mMessages, Monitoring::Monitor(mRequirements, mergedHandlers, subscribeAndCheckFunc));
@@ -77,11 +94,17 @@ private:
   RequirementsT mRequirements;
 };
 
-template<typename MessagesT> struct MonitorWith
+template<typename MessagesT, typename RequirementsT>
+auto MonitorWithRequirements(MessagesT messages, IPubSub &pubsub, RequirementsT requirements)
 {
-  MonitorWith(MessagesT messages, IPubSub &pubsub) : mMessages(std::move(messages)), mPubSub(pubsub) {}
+  return MonitorWithRequirementsT<MessagesT, RequirementsT>(std::move(messages), pubsub, std::move(requirements));
+}
 
-  template<typename RequirementsT> [[nodiscard]] auto Require(RequirementsT &&requirements)
+template<typename MessagesT> struct MonitorWithT
+{
+  MonitorWithT(MessagesT messages, IPubSub &pubsub) : mMessages(std::move(messages)), mPubSub(pubsub) {}
+
+  template<typename RequirementsT> /*[[nodiscard]]*/ auto Require(RequirementsT &&requirements)
   {
     return MonitorWithRequirements(mMessages, mPubSub, std::forward<RequirementsT>(requirements));
   }
@@ -91,15 +114,24 @@ private:
   IPubSub &mPubSub;
 };
 
-
-template<typename... MessageT> struct Monitor
+template<typename MessagesT> auto MonitorWith(MessagesT messages, IPubSub &pubsub)
 {
-  Monitor(MessageT... messages) : mMessages(messages...) {}
+  return MonitorWithT<MessagesT>(std::move(messages), pubsub);
+}
 
-  [[nodiscard]] auto With(IPubSub &pubsub) { return MonitorWith(mMessages, pubsub); }
+template<typename... MessageT> struct MonitorT
+{
+  MonitorT(MessageT... messages) : mMessages(std::move(messages)...) {}
+
+  /*[[nodiscard]]*/ auto With(IPubSub &pubsub) { return MonitorWith(mMessages, pubsub); }
 
 private:
   std::tuple<MessageT...> mMessages;
 };
+
+template<typename... MessageT> auto Monitor(MessageT &&...messages)
+{
+  return MonitorT<MessageT...>(std::forward<MessageT>(messages)...);
+}
 
 }// namespace PubSubMonitoring

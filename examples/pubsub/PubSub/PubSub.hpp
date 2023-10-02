@@ -2,6 +2,7 @@
 #include "IPubSub.hpp"
 #include <cassert>
 #include <cstring>
+#include <unordered_map>
 
 #include <iostream>
 

@@ -9,7 +9,7 @@ target_link_libraries(monitoring INTERFACE monitoring_options monitoring_warning
 target_include_directories(monitoring ${WARNING_GUARD} INTERFACE $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
                                                                   $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}/include>)
 
-target_compile_features(monitoring INTERFACE cxx_std_17)
+target_compile_features(monitoring INTERFACE cxx_std_14)
 
 set_target_properties(
   monitoring
